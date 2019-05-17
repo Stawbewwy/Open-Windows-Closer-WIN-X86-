@@ -6,22 +6,24 @@
 #include <iostream>
 #include <aclapi.h>
 
+#ifndef MAX_NAME_LEN
+#define MAX_NAME_LEN 1024
+#endif
+ 
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam) {
 
 	//TCHAR actually stands for "Type Char". Able to convert itself to either the regular old ASCII charset (char), or into unicode charset (wchar) 
 	//This will be used for a wchar (unicode char)
-	TCHAR windowTitle[300];
+	TCHAR windowTitle[MAX_NAME_LEN];
 
 	//With the window @hWnd, if it's a visible process, we want to print it out.
 	if (IsWindowVisible(hWnd)) {
 		//get the text of the open window!
-		GetWindowText(hWnd, (LPWSTR)windowTitle, 254);
+		GetWindowText(hWnd, (LPWSTR)windowTitle, MAX_NAME_LEN);
 
-		
 		if (wcslen(windowTitle)) {
-
 			std::wcout << windowTitle << std::endl;
-			std::cout << std::endl << "Would you like to terminate this process? y/n: ";
+			std::cout << std::endl << "Would you like to terminate this process? y -- Yes, anything else -- No: ";
 
 			char ans;
 			std::cin >> ans;
@@ -34,14 +36,10 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam) {
 				//Create a new handle to the target process
 				HANDLE current_process = OpenProcess(PROCESS_TERMINATE, FALSE, current_win_pid);
 
-				if( TerminateProcess(current_process, 0) == 0 ){
-					std::cout << "Sucessfully Terminated!";
-				}
-
-				else {
-					std::cout << "Sorry, I couldn't terminate that for you :(";
-				}
-				
+				if (TerminateProcess(current_process, 0))
+					std::cout << "Process Sucessfully Terminated!" << std::endl;
+				else
+					std::cout << "Sorry, I couldn't terminate that for you :(" << std::endl;
 			}
 
 			std::cout << std::endl << std::endl;
