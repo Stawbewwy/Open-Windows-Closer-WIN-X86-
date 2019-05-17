@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <iostream>
+#include <aclapi.h>
 
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam) {
 
@@ -13,11 +14,38 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, long lParam) {
 
 	//With the window @hWnd, if it's a visible process, we want to print it out.
 	if (IsWindowVisible(hWnd)) {
+		//get the text of the open window!
 		GetWindowText(hWnd, (LPWSTR)windowTitle, 254);
 
-		//cout does NOT work as desired with unicode set, so we use wcout to work properly with unicode strings (wchar strings).
-		std::wcout << windowTitle << std::endl;
+		
+		if (wcslen(windowTitle)) {
 
+			std::wcout << windowTitle << std::endl;
+			std::cout << std::endl << "Would you like to terminate this process? y/n: ";
+
+			char ans;
+			std::cin >> ans;
+
+			if (ans == 'y') {
+				//need to retrieve the PID of the process
+				DWORD current_win_pid;
+				GetWindowThreadProcessId(hWnd, &current_win_pid);
+
+				//Create a new handle to the target process
+				HANDLE current_process = OpenProcess(PROCESS_TERMINATE, FALSE, current_win_pid);
+
+				if( TerminateProcess(current_process, 0) == 0 ){
+					std::cout << "Sucessfully Terminated!";
+				}
+
+				else {
+					std::cout << "Sorry, I couldn't terminate that for you :(";
+				}
+				
+			}
+
+			std::cout << std::endl << std::endl;
+		}
 	}
 
 	return TRUE;
