@@ -1,3 +1,6 @@
+/*Author: Shadi Othman*/
+/*Major credit to the following resources: https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf8e95f4-47e4-4c84-911c-aecf2c9d20e4/problem-with-printing-lptstr?forum=vclanguage */
+
 #include <windows.h>
 #include <stdio.h>
 #include <iostream>
